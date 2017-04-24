@@ -106,6 +106,55 @@ ORDER BY score DESC`,
       },
     },
   },
+  {
+    School: "Politechnika Lubelska",
+    Department: "Wydział Elektrotechniki i Informatyki",
+    Class: "Informatyka",
+    Blocks: []Block{
+      {
+        Description: "język polski",
+        Query: `
+SELECT
+  *,
+  (CASE WHEN (extended = 1 AND percentage >= 30) THEN percentage + (6*percentage + 100)/7 ELSE percentage END) * 0.1 AS score
+FROM results
+WHERE subject = 'język polski'
+ORDER BY score DESC`,
+      },
+      {
+        Description: "język obcy nowożytny",
+        Query: `
+SELECT
+  *,
+  (CASE WHEN (extended = 1 AND percentage >= 30) THEN percentage + (6*percentage + 100)/7 ELSE percentage END) * 0.3 AS score
+FROM results
+WHERE subject IN
+      ('język angielski', 'język francuski', 'język niemiecki', 'język hiszpański', 'język włoski', 'język rosyjski')
+ORDER BY score DESC`,
+      },
+      {
+        Description: "przedmiot magiczny",
+        Query: `SELECT *
+FROM (SELECT
+        *,
+        (CASE WHEN (extended = 1 AND percentage >= 30)
+          THEN percentage + (6 * percentage + 100) / 7
+         ELSE percentage END) AS score
+      FROM results
+      WHERE subject IN ('matematyka', 'fizyka', 'informatyka')
+      UNION
+      SELECT
+        *,
+        (CASE WHEN (extended = 1 AND percentage >= 30)
+          THEN (6 * percentage + 100) / 7
+         ELSE percentage END) AS score
+      FROM results
+      WHERE subject IN ('historia', 'biologia', 'chemia', 'geografia', 'wiedza o społeczeństwie'))
+ORDER BY score
+  DESC`,
+      },
+    },
+  },
 }
 
 var Subjects = []Subject{
