@@ -2,11 +2,11 @@ package main
 
 import (
   "database/sql"
+  "fmt"
   _ "github.com/mattn/go-sqlite3"
   "html/template"
-  "net/http"
-  "fmt"
   "log"
+  "net/http"
   "strconv"
 )
 
@@ -14,8 +14,14 @@ type Block struct {
   Description, Query string
 }
 
+type Frontier struct {
+  Year  int
+  Value float64
+}
+
 type Target struct {
   School, Department, Class string
+  KnownFrontiers            []Frontier
   Blocks                    []Block
 }
 
@@ -52,6 +58,20 @@ var Targets = []Target{
     School:     "Uniwersytet Warszawski",
     Department: "Wydział Matematyki, Informatyki i Mechaniki",
     Class:      "Informatyka",
+    KnownFrontiers: []Frontier{
+      {
+        Year:  2014,
+        Value: 84.18,
+      },
+      {
+        Year:  2015,
+        Value: 86.64,
+      },
+      {
+        Year:  2016,
+        Value: 85.44,
+      },
+    },
     Blocks: []Block{
       {
         Description: "język polski",
@@ -107,9 +127,9 @@ ORDER BY score DESC`,
     },
   },
   {
-    School: "Politechnika Lubelska",
+    School:     "Politechnika Lubelska",
     Department: "Wydział Elektrotechniki i Informatyki",
-    Class: "Informatyka",
+    Class:      "Informatyka",
     Blocks: []Block{
       {
         Description: "język polski",
@@ -155,6 +175,365 @@ ORDER BY score
       },
     },
   },
+  {
+    School:     "Uniwersytet Marii Curie-Skłodowskiej w Lublinie",
+    Department: "Wydział Matematyki, Fizyki i Informatyki",
+    Class:      "Informatyka",
+    Blocks: []Block{
+      {
+        Description: "matematyka * 1",
+        Query: `
+SELECT
+  *,
+  percentage * (CASE WHEN extended = 1 THEN 2 ELSE 1 END) * 1 AS score
+FROM results
+WHERE subject = 'matematyka'
+ORDER BY score DESC`,
+      },
+      {
+        Description: "fizyka * 0.6",
+        Query: `
+SELECT
+  *,
+  percentage * (CASE WHEN extended = 1 THEN 2 ELSE 1 END) * 0.6 AS score
+FROM results
+WHERE subject = 'fizyka'
+ORDER BY score DESC`,
+      },
+      {
+        Description: "informatyka * 0.6",
+        Query: `
+SELECT
+  *,
+  percentage * (CASE WHEN extended = 1 THEN 2 ELSE 1 END) * 0.6 AS score
+FROM results
+WHERE subject = 'informatyka'
+ORDER BY score DESC`,
+      },
+    },
+  },
+  {
+    School:     "Politechnika Warszawska",
+    Department: "Wydział Elektroniki i Technik Informacyjnych",
+    Class:      "Informatyka",
+    KnownFrontiers: []Frontier{
+      {
+        Year:  2013,
+        Value: 179,
+      },
+      {
+        Year:  2014,
+        Value: 173,
+      },
+      {
+        Year:  2015,
+        Value: 178,
+      },
+      {
+        Year:  2016,
+        Value: 184,
+      },
+    },
+    Blocks: []Block{
+      {
+        Description: "matematyka",
+        Query: `
+SELECT
+  *,
+  percentage * (CASE WHEN extended = 1 THEN 1 ELSE 0.5 END) * 1 AS score
+FROM results
+WHERE subject = 'matematyka'
+ORDER BY score DESC`,
+      },
+      {
+        Description: "wybrany przedmiot",
+        Query: `SELECT
+  *,
+  percentage * (CASE WHEN extended = 1
+    THEN 1
+                ELSE 0.5 END) * (CASE subject
+                                 WHEN 'fizyka'
+                                   THEN 1
+                                 WHEN 'informatyka'
+                                   THEN 1
+                                 WHEN 'chemia'
+                                   THEN 0.75
+                                 WHEN 'biologia'
+                                   THEN 0.5
+                                 ELSE 0 END) AS score
+                                            FROM results
+                                            WHERE subject IN ('fizyka', 'informatyka', 'chemia', 'biologia')
+                                            ORDER BY score DESC`,
+      },
+      {
+        Description: "język obcy * 0.25",
+        Query: `
+SELECT
+  *,
+  percentage * (CASE WHEN extended = 1 THEN 1 ELSE 0.5 END) * 0.25 AS score
+FROM results
+WHERE subject IN
+      ('język angielski', 'język francuski', 'język niemiecki', 'język hiszpański', 'język włoski', 'język rosyjski')
+ORDER BY score DESC`,
+      },
+    },
+  },
+  {
+    School:     "Politechnika Warszawska",
+    Department: "Wydział Elektryczny",
+    Class:      "Informatyka",
+    KnownFrontiers: []Frontier{
+      {
+        Year:  2013,
+        Value: 153,
+      },
+      {
+        Year:  2014,
+        Value: 158,
+      },
+      {
+        Year:  2015,
+        Value: 166,
+      },
+      {
+        Year:  2016,
+        Value: 173,
+      },
+    },
+    Blocks: []Block{
+      {
+        Description: "matematyka",
+        Query: `
+SELECT
+  *,
+  percentage * (CASE WHEN extended = 1 THEN 1 ELSE 0.5 END) * 1 AS score
+FROM results
+WHERE subject = 'matematyka'
+ORDER BY score DESC`,
+      },
+      {
+        Description: "wybrany przedmiot",
+        Query: `SELECT
+  *,
+  percentage * (CASE WHEN extended = 1
+    THEN 1
+                ELSE 0.5 END) * (CASE subject
+                                 WHEN 'fizyka'
+                                   THEN 1
+                                 WHEN 'informatyka'
+                                   THEN 1
+                                 WHEN 'chemia'
+                                   THEN 0.75
+                                 WHEN 'biologia'
+                                   THEN 0.5
+                                 ELSE 0 END) AS score
+                                            FROM results
+                                            WHERE subject IN ('fizyka', 'informatyka', 'chemia', 'biologia')
+                                            ORDER BY score DESC`,
+      },
+      {
+        Description: "język obcy * 0.25",
+        Query: `
+SELECT
+  *,
+  percentage * (CASE WHEN extended = 1 THEN 1 ELSE 0.5 END) * 0.25 AS score
+FROM results
+WHERE subject IN
+      ('język angielski', 'język francuski', 'język niemiecki', 'język hiszpański', 'język włoski', 'język rosyjski')
+ORDER BY score DESC`,
+      },
+    },
+  },
+  {
+    School:     "Politechnika Warszawska",
+    Department: "Wydział Matematyki i Nauk Informacyjnych",
+    Class:      "Informatyka",
+    KnownFrontiers: []Frontier{
+      {
+        Year:  2013,
+        Value: 182,
+      },
+      {
+        Year:  2014,
+        Value: 180,
+      },
+      {
+        Year:  2015,
+        Value: 182,
+      },
+      {
+        Year:  2016,
+        Value: 194,
+      },
+    },
+    Blocks: []Block{
+      {
+        Description: "matematyka",
+        Query: `
+SELECT
+  *,
+  percentage * (CASE WHEN extended = 1 THEN 1 ELSE 0.5 END) * 1 AS score
+FROM results
+WHERE subject = 'matematyka'
+ORDER BY score DESC`,
+      },
+      {
+        Description: "wybrany przedmiot",
+        Query: `SELECT
+  *,
+  percentage * (CASE WHEN extended = 1
+    THEN 1
+                ELSE 0.5 END) * (CASE subject
+                                 WHEN 'fizyka'
+                                   THEN 1
+                                 WHEN 'informatyka'
+                                   THEN 1
+                                 WHEN 'chemia'
+                                   THEN 0.75
+                                 WHEN 'biologia'
+                                   THEN 0.5
+                                 ELSE 0 END) AS score
+                                            FROM results
+                                            WHERE subject IN ('fizyka', 'informatyka', 'chemia', 'biologia')
+                                            ORDER BY score DESC`,
+      },
+      {
+        Description: "język obcy * 0.25",
+        Query: `
+SELECT
+  *,
+  percentage * (CASE WHEN extended = 1 THEN 1 ELSE 0.5 END) * 0.25 AS score
+FROM results
+WHERE subject IN
+      ('język angielski', 'język francuski', 'język niemiecki', 'język hiszpański', 'język włoski', 'język rosyjski')
+ORDER BY score DESC`,
+      },
+    },
+  },
+  {
+    School:     "Politechnika Warszawska",
+    Department: "Wydział Elektroniki i Technik Informacyjnych",
+    Class:      "Computer Science",
+    KnownFrontiers: []Frontier{
+      {
+        Year:  2015,
+        Value: 124,
+      },
+      {
+        Year:  2016,
+        Value: 145,
+      },
+    },
+    Blocks: []Block{
+      {
+        Description: "matematyka",
+        Query: `
+SELECT
+  *,
+  percentage * (CASE WHEN extended = 1 THEN 1 ELSE 0.5 END) * 1 AS score
+FROM results
+WHERE subject = 'matematyka'
+ORDER BY score DESC`,
+      },
+      {
+        Description: "wybrany przedmiot",
+        Query: `SELECT
+  *,
+  percentage * (CASE WHEN extended = 1
+    THEN 1
+                ELSE 0.5 END) * (CASE subject
+                                 WHEN 'fizyka'
+                                   THEN 1
+                                 WHEN 'informatyka'
+                                   THEN 1
+                                 WHEN 'chemia'
+                                   THEN 0.75
+                                 WHEN 'biologia'
+                                   THEN 0.5
+                                 ELSE 0 END) AS score
+                                            FROM results
+                                            WHERE subject IN ('fizyka', 'informatyka', 'chemia', 'biologia')
+                                            ORDER BY score DESC`,
+      },
+      {
+        Description: "język obcy * 0.25",
+        Query: `
+SELECT
+  *,
+  percentage * (CASE WHEN extended = 1 THEN 1 ELSE 0.5 END) * 0.25 AS score
+FROM results
+WHERE subject IN
+      ('język angielski', 'język francuski', 'język niemiecki', 'język hiszpański', 'język włoski', 'język rosyjski')
+ORDER BY score DESC`,
+      },
+    },
+  },
+  {
+    School:     "Politechnika Warszawska",
+    Department: "Wydział Matematyki i Nauk Informacyjnych",
+    Class:      "Computer Science",
+    KnownFrontiers: []Frontier{
+      {
+        Year:  2013,
+        Value: 81,
+      },
+      {
+        Year:  2014,
+        Value: 130,
+      },
+      {
+        Year:  2015,
+        Value: 126,
+      },
+      {
+        Year:  2016,
+        Value: 157,
+      },
+    },
+    Blocks: []Block{
+      {
+        Description: "matematyka",
+        Query: `
+SELECT
+  *,
+  percentage * (CASE WHEN extended = 1 THEN 1 ELSE 0.5 END) * 1 AS score
+FROM results
+WHERE subject = 'matematyka'
+ORDER BY score DESC`,
+      },
+      {
+        Description: "wybrany przedmiot",
+        Query: `SELECT
+  *,
+  percentage * (CASE WHEN extended = 1
+    THEN 1
+                ELSE 0.5 END) * (CASE subject
+                                 WHEN 'fizyka'
+                                   THEN 1
+                                 WHEN 'informatyka'
+                                   THEN 1
+                                 WHEN 'chemia'
+                                   THEN 0.75
+                                 WHEN 'biologia'
+                                   THEN 0.5
+                                 ELSE 0 END) AS score
+                                            FROM results
+                                            WHERE subject IN ('fizyka', 'informatyka', 'chemia', 'biologia')
+                                            ORDER BY score DESC`,
+      },
+      {
+        Description: "język obcy * 0.25",
+        Query: `
+SELECT
+  *,
+  percentage * (CASE WHEN extended = 1 THEN 1 ELSE 0.5 END) * 0.25 AS score
+FROM results
+WHERE subject IN
+      ('język angielski', 'język francuski', 'język niemiecki', 'język hiszpański', 'język włoski', 'język rosyjski')
+ORDER BY score DESC`,
+      },
+    },
+  },
 }
 
 var Subjects = []Subject{
@@ -195,7 +574,17 @@ var Subjects = []Subject{
   {"wos", "wiedza o społeczeństwie", true},
 }
 
+var Templates = map[string]*template.Template{}
+
 func main() {
+  for _, templ_name := range []string{"block_foot.tpl.html", "block_head.tpl.html", "blocks_foot.tpl.html", "blocks_head.tpl.html", "fieldp.tpl.html", "fieldr.tpl.html", "foot.tpl.html", "frontier.tpl.html", "frontiers_foot.tpl.html", "frontiers_head.tpl.html", "head.tpl.html", "resultcard_foot.tpl.html", "resultcard_head.tpl.html", "score.tpl.html", "target_foot.tpl.html", "target_head.tpl.html"} {
+    var err error
+    Templates[templ_name], err = template.ParseFiles(templ_name)
+    if err != nil {
+      log.Panic(err)
+      return
+    }
+  }
   http.HandleFunc("/oh-boi/", formReactor)
   http.HandleFunc("/", formCreator)
   http.ListenAndServe(":9008", nil)
@@ -208,6 +597,7 @@ func formReactor(writer http.ResponseWriter, request *http.Request) {
     fmt.Fprint(writer, "Nie udało się ogarnąć bazy danych")
     return
   }
+  defer db.Close()
   _, err = db.Exec(`CREATE TABLE results (
   subject    TEXT    NOT NULL,
   extended   BOOLEAN NOT NULL,
@@ -281,99 +671,42 @@ func formReactor(writer http.ResponseWriter, request *http.Request) {
     calcTs = append(calcTs, calcT)
   }
 
-  templ, err := template.ParseFiles("resultcard_head.tpl.html")
-  if err != nil {
-    log.Print(err)
-    fmt.Fprint(writer, "Nasz szablon jest zepsuty")
-    return
-  }
-  templ.Execute(writer, nil)
+  Templates["resultcard_head.tpl.html"].Execute(writer, nil)
 
   for _, target := range calcTs {
-    templ, err := template.ParseFiles("target_head.tpl.html")
-    if err != nil {
-      log.Print(err)
-      fmt.Fprint(writer, "Nasz szablon jest zepsuty")
-      return
-    }
-    templ.Execute(writer, target)
+    Templates["target_head.tpl.html"].Execute(writer, target)
+    Templates["blocks_head.tpl.html"].Execute(writer, target)
     for _, block := range target.CalculatedBlocks {
-      templ, err := template.ParseFiles("block_head.tpl.html")
-      if err != nil {
-        log.Print(err)
-        fmt.Fprint(writer, "Nasz szablon jest zepsuty")
-        return
-      }
-      templ.Execute(writer, block)
+      Templates["block_head.tpl.html"].Execute(writer, block)
 
       for _, score := range block.SortedScores {
-        templ, err := template.ParseFiles("score.tpl.html")
-        if err != nil {
-          log.Print(err)
-          fmt.Fprint(writer, "Nasz szablon jest zepsuty")
-          return
-        }
-        templ.Execute(writer, score)
+        Templates["score.tpl.html"].Execute(writer, score)
       }
 
-      templ, err = template.ParseFiles("block_foot.tpl.html")
-      if err != nil {
-        log.Print(err)
-        fmt.Fprint(writer, "Nasz szablon jest zepsuty")
-        return
+      Templates["block_foot.tpl.html"].Execute(writer, block)
+    }
+    Templates["blocks_foot.tpl.html"].Execute(writer, target)
+    if len(target.RelatedTarget.KnownFrontiers) > 0 {
+      Templates["frontiers_head.tpl.html"].Execute(writer, target)
+      for _, frontier := range target.RelatedTarget.KnownFrontiers {
+        Templates["frontier.tpl.html"].Execute(writer, frontier)
       }
-      templ.Execute(writer, block)
+      Templates["frontiers_foot.tpl.html"].Execute(writer, target)
     }
-    templ, err = template.ParseFiles("target_foot.tpl.html")
-    if err != nil {
-      log.Print(err)
-      fmt.Fprint(writer, "Nasz szablon jest zepsuty")
-      return
-    }
-    templ.Execute(writer, target)
+    Templates["target_foot.tpl.html"].Execute(writer, target)
   }
 
-  templ, err = template.ParseFiles("resultcard_foot.tpl.html")
-  if err != nil {
-    log.Print(err)
-    fmt.Fprint(writer, "Nasz szablon jest zepsuty")
-    return
-  }
-  templ.Execute(writer, nil)
+  Templates["resultcard_foot.tpl.html"].Execute(writer, nil)
 }
 
 func formCreator(writer http.ResponseWriter, request *http.Request) {
-  templ, err := template.ParseFiles("head.tpl.html")
-  if err != nil {
-    log.Print(err)
-    fmt.Fprint(writer, "Nasz szablon jest zepsuty")
-    return
-  }
-  templ.Execute(writer, nil)
-  ptempl, err := template.ParseFiles("fieldp.tpl.html")
-  if err != nil {
-    log.Print(err)
-    fmt.Fprint(writer, "Nasz szablon jest zepsuty")
-    return
-  }
-  rtempl, err := template.ParseFiles("fieldr.tpl.html")
-  if err != nil {
-    log.Print(err)
-    fmt.Fprint(writer, "Nasz szablon jest zepsuty")
-    return
-  }
+  Templates["head.tpl.html"].Execute(writer, nil)
   for _, subject := range Subjects {
     if subject.Extended {
-      rtempl.Execute(writer, subject)
+      Templates["fieldp.tpl.html"].Execute(writer, subject)
     } else {
-      ptempl.Execute(writer, subject)
+      Templates["fieldr.tpl.html"].Execute(writer, subject)
     }
   }
-  templ, err = template.ParseFiles("foot.tpl.html")
-  if err != nil {
-    log.Print(err)
-    fmt.Fprint(writer, "Nasz szablon jest zepsuty")
-    return
-  }
-  templ.Execute(writer, nil)
+  Templates["foot.tpl.html"].Execute(writer, nil)
 }

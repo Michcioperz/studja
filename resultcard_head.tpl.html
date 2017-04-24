@@ -21,8 +21,19 @@
         content: "Kierunek: ";
       }
 
-      .target .sum {
+      .target .frontiers {
         clear: both;
+      }
+
+      .target .frontiers::before {
+        content: "Znane wcześniejsze progi: ";
+      }
+
+      .target .frontiers .year::before {
+        content: "rok ";
+      }
+
+      .target .sum {
         font-size: 2em;
       }
 
@@ -30,10 +41,13 @@
         content: "Suma punktów: ";
       }
 
-      .block {
-        border: 1px solid darkslategray;
+      .target, .blocks, .frontiers {
         margin: 0.5em;
         padding: 0.5em;
+      }
+
+      .block {
+        border: 1px solid darkslategray;
         float: left;
       }
 
@@ -62,7 +76,7 @@
         content: "Po przeliczeniu: ";
       }
 
-      div.score p.score::after, .target .sum::after {
+      div.score p.score::after, .target .sum::after, .frontier .value::after {
         content: " pkt";
       }
 
@@ -74,5 +88,29 @@
         content: " (R)";
       }
     </style>
+    <script>
+      function showAll() {
+        for (var element of document.querySelectorAll("div.blocks")) {
+          element.style.display = ''
+        }
+      }
+      function hideAll() {
+        for (var element of document.querySelectorAll("div.blocks")) {
+          element.style.display = 'none'
+        }
+      }
+      function showBlocks(elem) {
+        for (var element of elem.parentNode.querySelectorAll("div.blocks")) {
+          element.style.display = ''
+        }
+      }
+      function hideBlocks(elem) {
+        for (var element of elem.parentNode.querySelectorAll("div.blocks")) {
+          element.style.display = 'none'
+        }
+      }
+    </script>
   </head>
   <body>
+    <a href="javascript:void(0)" onClick="hideAll()">Zwiń wszystkie</a>
+    <a href="javascript:void(0)" onClick="showAll()">Rozwiń wszystkie</a>
