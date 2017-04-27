@@ -703,9 +703,9 @@ func formCreator(writer http.ResponseWriter, request *http.Request) {
   Templates["head.tpl.html"].Execute(writer, nil)
   for _, subject := range Subjects {
     if subject.Extended {
-      Templates["fieldp.tpl.html"].Execute(writer, subject)
-    } else {
       Templates["fieldr.tpl.html"].Execute(writer, subject)
+    } else {
+      Templates["fieldp.tpl.html"].Execute(writer, subject)
     }
   }
   Templates["foot.tpl.html"].Execute(writer, nil)
