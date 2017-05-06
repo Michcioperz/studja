@@ -182,15 +182,15 @@ ORDER BY score
 		Blocks: []Block{
 			{
 				Description: "matematyka",
-				Query: `SELECT *, (CASE WHEN percentage < 30 THEN 0 ELSE percentage*(CASE WHEN extended = 1 THEN 5 ELSE 2 END)) AS score FROM results WHERE subject = 'matematyka' ORDER BY score DESC`,
+				Query: `SELECT *, (CASE WHEN percentage < 30 THEN 0 ELSE percentage*(CASE WHEN extended = 1 THEN 5 ELSE 2 END) END) AS score FROM results WHERE subject = 'matematyka' ORDER BY score DESC`,
 			},
 			{
 				Description: "fizyka/chemia/informatyka",
-				Query: `SELECT *, (CASE WHEN percentage < 30 THEN 0 ELSE percentage*(CASE WHEN extended = 1 THEN 3 ELSE 1.2 END)) AS score FROM results WHERE subject IN ('fizyka', 'chemia', 'informatyka') ORDER BY score DESC`,
+				Query: `SELECT *, (CASE WHEN percentage < 30 THEN 0 ELSE percentage*(CASE WHEN extended = 1 THEN 3 ELSE 1.2 END) END) AS score FROM results WHERE subject IN ('fizyka', 'chemia', 'informatyka') ORDER BY score DESC`,
 			},
 			{
 				Description: "język obcy",
-				Query: `SELECT *, (CASE WHEN percentage < 30 THEN 0 ELSE percentage*(CASE WHEN extended = 1 THEN 2 ELSE 0.8 END)) AS score FROM results WHERE subject IN ('język angielski', 'język francuski', 'język niemiecki', 'język hiszpański', 'język włoski', 'język rosyjski') ORDER BY score DESC`,
+				Query: `SELECT *, (CASE WHEN percentage < 30 THEN 0 ELSE percentage*(CASE WHEN extended = 1 THEN 2 ELSE 0.8 END) END) AS score FROM results WHERE subject IN ('język angielski', 'język francuski', 'język niemiecki', 'język hiszpański', 'język włoski', 'język rosyjski') ORDER BY score DESC`,
 			},
 		},
 	},
