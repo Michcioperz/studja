@@ -1,0 +1,20 @@
+{
+  "School": "Uniwersytet Marii Curie-Skłodowskiej w Lublinie",
+  "Department": "Wydział Matematyki, Fizyki i Informatyki",
+  "Class": "Informatyka",
+  "KnownFrontiers": null,
+  "Blocks": [
+    {
+      "Description": "matematyka * 1",
+      "Query": "SELECT *, percentage * (CASE WHEN extended = 1 THEN 2 ELSE 1 END) * 1 AS score FROM results WHERE subject = 'matematyka' ORDER BY score DESC"
+    },
+    {
+      "Description": "fizyka * 0.6",
+      "Query": "SELECT *, percentage * (CASE WHEN extended = 1 THEN 2 ELSE 1 END) * 0.6 AS score FROM results WHERE subject = 'fizyka' ORDER BY score DESC"
+    },
+    {
+      "Description": "informatyka * 0.6",
+      "Query": "SELECT *, percentage * (CASE WHEN extended = 1 THEN 2 ELSE 1 END) * 0.6 AS score FROM results WHERE subject = 'informatyka' ORDER BY score DESC"
+    }
+  ]
+}

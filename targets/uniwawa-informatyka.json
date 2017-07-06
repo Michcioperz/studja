@@ -1,0 +1,41 @@
+{
+  "School": "Uniwersytet Warszawski",
+  "Department": "Wydział Matematyki, Informatyki i Mechaniki",
+  "Class": "Informatyka",
+  "KnownFrontiers": [
+    {
+      "Year": 2014,
+      "Value": 84.18
+    },
+    {
+      "Year": 2015,
+      "Value": 86.64
+    },
+    {
+      "Year": 2016,
+      "Value": 85.44
+    }
+  ],
+  "Blocks": [
+    {
+      "Description": "język polski",
+      "Query": "SELECT *, percentage * (CASE WHEN extended = 1 THEN 1 ELSE 0.6 END) * 0.1 AS score FROM results WHERE subject = 'język polski' ORDER BY score DESC"
+    },
+    {
+      "Description": "matematyka",
+      "Query": "SELECT *, percentage * (CASE WHEN extended = 1 THEN 1 ELSE 0.6 END) * 0.1 AS score FROM results WHERE subject = 'matematyka' ORDER BY score DESC"
+    },
+    {
+      "Description": "język obcy nowożytny",
+      "Query": "SELECT *, percentage * (CASE WHEN extended = 1 THEN 1 ELSE 0.6 END) * 0.1 AS score FROM results WHERE subject IN ('język angielski', 'język francuski', 'język niemiecki', 'język hiszpański', 'język włoski', 'język rosyjski') ORDER BY score DESC"
+    },
+    {
+      "Description": "rozszerzona matematyka lub informatyka",
+      "Query": "SELECT *, percentage * 1 * 0.5 AS score FROM results WHERE extended = 1 AND subject IN ('matematyka', 'informatyka') ORDER BY score DESC"
+    },
+    {
+      "Description": "dowolne rozszerzenie",
+      "Query": "SELECT *, percentage * 1 * 0.2 AS score FROM results WHERE extended = 1 ORDER BY score DESC"
+    }
+  ]
+}
