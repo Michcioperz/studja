@@ -1,0 +1,12 @@
+{% extends "core.tpl2.html" %}
+{% block content %}
+    <form action="/oh-boi/" method="GET" target="_blank">
+      {% for subject in subjects %}
+      <div class="field">
+        <label for="{% if subject.Extended %}rozsz{% else %}podst{% endif %}-{{ fieldName }}">{{ subject.FullName }} {% if subject.Extended %}(rozszerzenie){% else %}(podstawa){% endif %}</label>
+        <input id="{% if subject.Extended %}rozsz{% else %}podst{% endif %}-{{ fieldName }}" name="{% if subject.Extended %}rozsz{% else %}podst{% endif %}-{{ fieldName }}" type="number" min="0" max="100">
+      </div>
+      {% endfor %}
+      <input type="submit">
+    </form>
+{% endblock content %}

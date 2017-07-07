@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"github.com/flosch/pongo2"
 	_ "github.com/mattn/go-sqlite3"
 	"html/template"
 	"io/ioutil"
@@ -101,6 +102,9 @@ var Subjects = []Subject{
 
 var Templates = map[string]*template.Template{}
 
+var FormTemplate = pongo2.Must(pongo2.FromFile("form.tpl2.html"))
+var ResultsTemplate = pongo2.Must(pongo2.FromFile("results.tpl2.html"))
+
 func main() {
 	var err error
 	for _, templ_name := range []string{"block_foot.tpl.html", "block_head.tpl.html", "blocks_foot.tpl.html", "blocks_head.tpl.html", "fieldp.tpl.html", "fieldr.tpl.html", "foot.tpl.html", "frontier.tpl.html", "frontiers_foot.tpl.html", "frontiers_head.tpl.html", "head.tpl.html", "resultcard_foot.tpl.html", "resultcard_head.tpl.html", "score.tpl.html", "target_foot.tpl.html", "target_head.tpl.html"} {
@@ -140,6 +144,9 @@ func main() {
 		return
 	}
 	http.HandleFunc("/oh-boi/", formReactor)
+	http.HandleFunc("/results.css", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "results.css")
+	})
 	http.HandleFunc("/", formCreator)
 	http.ListenAndServe(":9008", nil)
 }
@@ -225,42 +232,17 @@ func formReactor(writer http.ResponseWriter, request *http.Request) {
 		calcTs = append(calcTs, calcT)
 	}
 
-	Templates["resultcard_head.tpl.html"].Execute(writer, nil)
-
-	for _, target := range calcTs {
-		Templates["target_head.tpl.html"].Execute(writer, target)
-		Templates["blocks_head.tpl.html"].Execute(writer, target)
-		for _, block := range target.CalculatedBlocks {
-			Templates["block_head.tpl.html"].Execute(writer, block)
-
-			for _, score := range block.SortedScores {
-				Templates["score.tpl.html"].Execute(writer, score)
-			}
-
-			Templates["block_foot.tpl.html"].Execute(writer, block)
-		}
-		Templates["blocks_foot.tpl.html"].Execute(writer, target)
-		if len(target.RelatedTarget.KnownFrontiers) > 0 {
-			Templates["frontiers_head.tpl.html"].Execute(writer, target)
-			for _, frontier := range target.RelatedTarget.KnownFrontiers {
-				Templates["frontier.tpl.html"].Execute(writer, frontier)
-			}
-			Templates["frontiers_foot.tpl.html"].Execute(writer, target)
-		}
-		Templates["target_foot.tpl.html"].Execute(writer, target)
+	err = ResultsTemplate.ExecuteWriter(pongo2.Context{"targets": calcTs}, writer)
+	if err != nil {
+		log.Println(err)
+		http.Error(writer, "coś nie wyszło. ups.", http.StatusInternalServerError)
 	}
-
-	Templates["resultcard_foot.tpl.html"].Execute(writer, nil)
 }
 
 func formCreator(writer http.ResponseWriter, request *http.Request) {
-	Templates["head.tpl.html"].Execute(writer, nil)
-	for _, subject := range Subjects {
-		if subject.Extended {
-			Templates["fieldr.tpl.html"].Execute(writer, subject)
-		} else {
-			Templates["fieldp.tpl.html"].Execute(writer, subject)
-		}
+	err := FormTemplate.ExecuteWriter(pongo2.Context{"subjects": Subjects}, writer)
+	if err != nil {
+		log.Println(err)
+		http.Error(writer, "coś nie wyszło. ups.", http.StatusInternalServerError)
 	}
-	Templates["foot.tpl.html"].Execute(writer, nil)
 }

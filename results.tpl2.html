@@ -1,0 +1,35 @@
+{% extends "core.tpl2.html" %}
+{% block content %}
+    <link rel="stylesheet" href="/results.css">
+    {% for target in targets %}
+    <div class="target">
+      <p class="school">{{ target.RelatedTarget.School }}</p>
+      <p class="department">{{ target.RelatedTarget.Department }}</p>
+      <p class="clazz">{{ target.RelatedTarget.Class }}</p>
+      <div class="blocks">
+        {% for blok in target.CalculatedBlocks %}
+        <div class="block">
+          <p class="description">{{ blok.RelatedBlock.Description }}</p>
+          {% for score in blok.SortedScores %}
+          <div class="score">
+            <p class="subject" data-extended="{{ score.SourceResult.Extended }}">{{ score.SourceResult.Subject }}</p>
+            <p class="percentage">{{ score.SourceResult.Percentage|floatformat:2 }}</p>
+            <p class="score">{{ score.Calculation|floatformat:"-2" }}</p>
+          </div>
+          {% endfor %}
+        </div>
+        {% endfor %}
+        {% if target.RelatedTarget.KnownFrontiers|length > 0 %}
+        <div class="frontiers">
+          <ul>
+          {% for frontier in target.RelatedTarget.KnownFrontiers %}
+            <li class="frontier"><span class="year">{{ frontier.Year }}</span> <span class="value">{{ frontier.Value|floatformat:"-2" }}</span></li>
+          {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+        <p class="sum">{{ target.Sum|floatformat:"-2" }}</p>
+      </div>
+    </div>
+    {% endfor %}
+{% endblock content %}
