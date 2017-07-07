@@ -1,0 +1,19 @@
+{
+  "School": "Politechnika Warszawska",
+  "Department": "Wydział Matematyki i Nauk Informacyjnych",
+  "Class": "Inżynieria i Analiza Danych (Data Science)",
+  "Blocks": [
+    {
+      "Description": "matematyka",
+      "Query": "SELECT *, percentage * (CASE WHEN extended = 1 THEN 1 ELSE 0.5 END) * 1.25 AS score FROM results WHERE subject = 'matematyka' ORDER BY score DESC"
+    },
+    {
+      "Description": "wybrany przedmiot",
+      "Query": "SELECT *, percentage * (CASE WHEN extended = 1 THEN 1 ELSE 0.5 END) * (CASE WHEN subject IN ('fizyka', 'informatyka') THEN 0.75 ELSE 0.5 END) AS score FROM results WHERE subject IN ('fizyka', 'informatyka', 'chemia', 'biologia', 'geografia') ORDER BY score DESC"
+    },
+    {
+      "Description": "język obcy * 0.25",
+      "Query": "SELECT *, percentage * (CASE WHEN extended = 1 THEN 1 ELSE 0.5 END) * 0.25 AS score FROM results WHERE subject IN ('język angielski', 'język francuski', 'język niemiecki', 'język hiszpański', 'język włoski', 'język rosyjski') ORDER BY score DESC"
+    }
+  ]
+}
