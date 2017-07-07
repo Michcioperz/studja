@@ -100,20 +100,11 @@ var Subjects = []Subject{
 	{"wos", "wiedza o społeczeństwie", true},
 }
 
-var Templates = map[string]*template.Template{}
-
 var FormTemplate = pongo2.Must(pongo2.FromFile("form.tpl2.html"))
 var ResultsTemplate = pongo2.Must(pongo2.FromFile("results.tpl2.html"))
 
 func main() {
 	var err error
-	for _, templ_name := range []string{"block_foot.tpl.html", "block_head.tpl.html", "blocks_foot.tpl.html", "blocks_head.tpl.html", "fieldp.tpl.html", "fieldr.tpl.html", "foot.tpl.html", "frontier.tpl.html", "frontiers_foot.tpl.html", "frontiers_head.tpl.html", "head.tpl.html", "resultcard_foot.tpl.html", "resultcard_head.tpl.html", "score.tpl.html", "target_foot.tpl.html", "target_head.tpl.html"} {
-		Templates[templ_name], err = template.ParseFiles(templ_name)
-		if err != nil {
-			log.Panic(err)
-			return
-		}
-	}
 	targets, err := ioutil.ReadDir(TARGETS_DIR)
 	if err != nil {
 		log.Panic(err)
