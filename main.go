@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/flosch/pongo2"
 	_ "github.com/mattn/go-sqlite3"
-	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
