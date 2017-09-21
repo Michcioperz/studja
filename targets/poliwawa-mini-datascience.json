@@ -2,6 +2,12 @@
   "School": "Politechnika Warszawska",
   "Department": "Wydział Matematyki i Nauk Informacyjnych",
   "Class": "Inżynieria i Analiza Danych (Data Science)",
+  "KnownFrontiers": [
+    {
+      "Year": 2017,
+      "Value": 194
+    }
+  ],
   "Blocks": [
     {
       "Description": "matematyka",
